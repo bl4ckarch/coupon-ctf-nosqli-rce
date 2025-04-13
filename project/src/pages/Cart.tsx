@@ -1,130 +1,127 @@
-import React, { useEffect, useState } from 'react';
-import { CartItem } from '../types';
-import { Trash2, Tag } from 'lucide-react';
+import React, { useState } from 'react';
+import { Trash2, Minus, Plus } from 'lucide-react';
+import { useCartStore } from '../store/cart';
 
-function Cart() {
-  const [cart, setCart] = useState<CartItem[]>([]);
+export default function Cart() {
+  const { items, removeFromCart, updateQuantity, validateCoupon } = useCartStore();
   const [couponCode, setCouponCode] = useState('');
-  const [couponResponse, setCouponResponse] = useState('');
-  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState('');
 
-  useEffect(() => {
-    fetch('/cart')
-      .then((res) => res.json())
-      .then(setCart)
-      .catch(console.error);
-  }, []);
+  const total = items.reduce((sum, item) => (
+    sum + item.product.price * item.quantity
+  ), 0);
 
-  const applyCoupon = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsApplyingCoupon(true);
-    try {
-      const response = await fetch('/apply-coupon', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ couponCode }),
-      });
-      const data = await response.json();
-      setCouponResponse(JSON.stringify(data, null, 2));
-    } catch (err) {
-      console.error('Failed to apply coupon:', err);
-    } finally {
-      setIsApplyingCoupon(false);
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    if (newQuantity > 0) {
+      updateQuantity(productId, newQuantity);
     }
   };
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const handleCouponSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError('');
+    
+    try {
+      await validateCoupon(couponCode);
+      // Handle successful coupon validation
+    } catch (err) {
+      setCouponError('Invalid coupon code');
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-8 text-gray-800">Your Shopping Cart</h2>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8">Your Cart</h1>
       
-      {cart.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-md p-8 text-center">
-          <p className="text-gray-600 text-lg">Your cart is empty</p>
-        </div>
+      {items.length === 0 ? (
+        <p className="text-gray-400">Your cart is empty</p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="divide-y divide-gray-200">
-                {cart.map((item) => (
-                  <div key={item.id} className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
-                        <p className="text-gray-600 mt-1">Quantity: {item.quantity}</p>
-                      </div>
-                      <div className="flex items-center gap-6">
-                        <span className="text-lg font-bold text-purple-600">
-                          ${item.price * item.quantity}
-                        </span>
-                        <button className="text-red-500 hover:text-red-600">
-                          <Trash2 size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          <div className="lg:col-span-2 space-y-4">
+            {items.map((item) => (
+              <div
+                key={item.productId}
+                className="bg-[#1f1f1f] rounded-lg p-4 flex items-center gap-4"
+              >
+                <img
+                  src={item.product.image}
+                  alt={item.product.name}
+                  className="w-24 h-24 object-cover rounded"
+                />
+                
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">{item.product.name}</h3>
+                  <p className="text-red-600 font-bold">${item.product.price}</p>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                    className="p-1 hover:text-red-600"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="w-8 text-center">{item.quantity}</span>
+                  <button
+                    onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                    className="p-1 hover:text-red-600"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <button
+                  onClick={() => removeFromCart(item.productId)}
+                  className="p-2 hover:text-red-600"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+            ))}
+          </div>
+          
+          <div className="bg-[#1f1f1f] rounded-lg p-6 h-fit">
+            <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+            
+            <div className="space-y-2 mb-6">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>${total.toFixed(2)}</span>
               </div>
             </div>
-          </div>
-
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Tag size={20} />
-                Apply Coupon
-              </h3>
-              <form onSubmit={applyCoupon} className="space-y-4">
+            
+            <form onSubmit={handleCouponSubmit} className="mb-6">
+              <label className="block text-sm font-medium text-gray-200 mb-1">
+                Coupon Code
+              </label>
+              <div className="flex gap-2">
                 <input
                   type="text"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter coupon code"
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="flex-1 bg-[#2a2a2a] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                  placeholder="Enter code"
                 />
                 <button
                   type="submit"
-                  disabled={isApplyingCoupon}
-                  className="w-full bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transform transition-transform active:scale-95 disabled:opacity-50"
+                  className="bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700 transition"
                 >
-                  Apply Coupon
-                </button>
-              </form>
-              {couponResponse && (
-                <pre className="mt-4 bg-gray-50 p-4 rounded-lg overflow-x-auto text-sm">
-                  {couponResponse}
-                </pre>
-              )}
-            </div>
-
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="space-y-4">
-                <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span>
-                  <span>${total}</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Shipping</span>
-                  <span>Free</span>
-                </div>
-                <div className="border-t pt-4">
-                  <div className="flex justify-between text-xl font-bold">
-                    <span>Total</span>
-                    <span>${total}</span>
-                  </div>
-                </div>
-                <button className="w-full bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transform transition-transform active:scale-95">
-                  Proceed to Checkout
+                  Apply
                 </button>
               </div>
-            </div>
+              {couponError && (
+                <p className="text-red-600 text-sm mt-1">{couponError}</p>
+              )}
+            </form>
+            
+            <button
+              className="w-full bg-red-600 text-white py-3 rounded font-semibold hover:bg-red-700 transition"
+            >
+              Checkout (${total.toFixed(2)})
+            </button>
           </div>
         </div>
       )}
     </div>
   );
 }
-
-export default Cart;

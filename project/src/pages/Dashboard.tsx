@@ -1,42 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import { CartItem } from '../types';
+import React from 'react';
+import { useAuthStore } from '../store/auth';
+import { useCartStore } from '../store/cart';
 
-function Dashboard() {
-  const [cart, setCart] = useState<CartItem[]>([]);
-
-  useEffect(() => {
-    fetch('/dashboard')
-      .then((res) => res.json())
-      .then(setCart)
-      .catch(console.error);
-  }, []);
+export default function Dashboard() {
+  const user = useAuthStore(state => state.user);
+  const cartItems = useCartStore(state => state.items);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Your Current Cart</h3>
-        {cart.length === 0 ? (
-          <p className="text-gray-600">Your cart is empty</p>
-        ) : (
-          <div className="space-y-4">
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between border-b pb-4"
-              >
-                <div>
-                  <h4 className="font-semibold">{item.name}</h4>
-                  <p className="text-gray-600">Quantity: {item.quantity}</p>
-                </div>
-                <span className="font-bold">${item.price * item.quantity}</span>
-              </div>
-            ))}
+    <div className="container mx-auto px-4 py-8">
+      <div className="bg-[#1f1f1f] rounded-lg p-8">
+        <h1 className="text-4xl font-bold mb-8">Welcome, {user?.firstName}!</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Your Profile</h2>
+            <div className="space-y-2">
+              <p><span className="text-gray-400">Username:</span> {user?.username}</p>
+              <p><span className="text-gray-400">Name:</span> {user?.firstName} {user?.lastName}</p>
+              <p><span className="text-gray-400">Address:</span> {user?.address}</p>
+            </div>
           </div>
-        )}
+          
+          <div>
+            <h2 className="text-2xl font-semibold mb-4">Cart Summary</h2>
+            {cartItems.length === 0 ? (
+              <p className="text-gray-400">Your cart is empty</p>
+            ) : (
+              <div className="space-y-2">
+                {cartItems.map(item => (
+                  <div key={item.productId} className="flex justify-between">
+                    <span>{item.product.name} x {item.quantity}</span>
+                    <span className="text-red-600">${(item.product.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
-export default Dashboard;

@@ -1,47 +1,59 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingCart } from 'lucide-react';
+import { useCartStore } from '../store/cart';
 import { Product } from '../types';
-import { ShoppingBag } from 'lucide-react';
 
-function Products() {
+export default function Products() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const addToCart = useCartStore(state => state.addToCart);
 
   useEffect(() => {
-    fetch('/products')
-      .then((res) => res.json())
-      .then(setProducts)
-      .catch(console.error);
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch products:', err);
+        setLoading(false);
+      });
   }, []);
 
-  return (
-    <div className="space-y-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-          Welcome to Coupon Madness
-        </h1>
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Discover amazing products at unbeatable prices. Use our special coupons during checkout to unlock exclusive discounts!
-        </p>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8">All Products</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((product) => (
-          <div 
-            key={product.id} 
-            className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105"
+          <div
+            key={product.id}
+            className="bg-[#1f1f1f] rounded-lg overflow-hidden hover:scale-105 transition duration-300"
           >
-            <div className="h-48 bg-gradient-to-br from-purple-100 to-blue-50 flex items-center justify-center">
-              <ShoppingBag size={64} className="text-gray-400" />
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold mb-2 text-gray-800">{product.name}</h3>
-              <p className="text-gray-600 mb-4 min-h-[3rem]">{product.description}</p>
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
+              <p className="text-gray-400 mb-4">{product.description}</p>
               <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-purple-600">${product.price}</span>
-                <button 
-                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transform transition-transform active:scale-95 flex items-center gap-2"
+                <span className="text-red-600 font-bold">${product.price}</span>
+                <button
+                  onClick={() => addToCart(product)}
+                  className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition"
                 >
-                  <ShoppingBag size={18} />
-                  Add to Cart
+                  <ShoppingCart className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -51,5 +63,3 @@ function Products() {
     </div>
   );
 }
-
-export default Products;
