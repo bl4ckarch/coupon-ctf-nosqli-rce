@@ -7,7 +7,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/admin/users')
+    fetch('/api/admin/users')
       .then(res => res.json())
       .then(data => {
         setUsers(data);

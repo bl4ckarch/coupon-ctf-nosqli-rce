@@ -19,7 +19,20 @@ const FEATURED_PRODUCTS = [
     name: '4K Gaming Monitor',
     image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800',
     price: 599.99
+  },
+  {
+    id: '4',
+    name: 'xbox controller',
+    image: 'https://images.unsplash.com/photo-1605899435973-ca2d1a8861cf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8eGJveHxlbnwwfHwwfHx8MA%3D%3D',
+    price: 599.99
+  },
+  {
+    id: '5',
+    name: 'xbox controller 2',
+    image: 'https://images.unsplash.com/photo-1612801799890-4ba4760b6590?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHhib3h8ZW58MHx8MHx8fDA%3D',
+    price: 599.99
   }
+  
 ];
 
 export default function Home() {
