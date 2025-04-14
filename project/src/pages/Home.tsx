@@ -4,40 +4,40 @@ import { Link } from 'react-router-dom';
 const FEATURED_PRODUCTS = [
   {
     id: '1',
-    name: 'Premium Laptop',
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?w=800',
-    price: 999.99
+    name: 'Gaming Laptop',
+    image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800',
+    price: 1299.99
   },
   {
     id: '2',
-    name: 'Wireless Headphones',
+    name: 'Premium Headphones',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
-    price: 199.99
+    price: 299.99
   },
   {
     id: '3',
-    name: 'Smart Watch',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
-    price: 299.99
+    name: '4K Gaming Monitor',
+    image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800',
+    price: 599.99
   }
 ];
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#141414] text-white">
-      <div className="relative h-[70vh] bg-gradient-to-b from-black/60 to-[#141414]">
+      <div className="relative h-[80vh] bg-gradient-to-b from-black/60 to-[#141414]">
         <img
-          src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600"
+          src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600"
           alt="Hero"
           className="absolute inset-0 w-full h-full object-cover -z-10"
         />
         <div className="container mx-auto px-4 h-full flex items-center">
           <div className="max-w-2xl">
-            <h1 className="text-5xl font-bold mb-4">Welcome to CTF Shop</h1>
-            <p className="text-xl mb-8">Discover our exclusive collection of premium products.</p>
+            <h1 className="text-6xl font-bold mb-4">Welcome to CTF Shop</h1>
+            <p className="text-2xl mb-8 text-gray-300">Your destination for premium gaming gear.</p>
             <Link
               to="/products"
-              className="bg-red-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-red-700 transition"
+              className="bg-red-600 text-white px-8 py-3 rounded text-lg font-semibold hover:bg-red-700 transition-colors"
             >
               Shop Now
             </Link>
@@ -46,7 +46,7 @@ export default function Home() {
       </div>
 
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-8">Featured Products</h2>
+        <h2 className="text-4xl font-bold mb-8">Featured Products</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {FEATURED_PRODUCTS.map((product) => (
             <div
@@ -56,11 +56,17 @@ export default function Home() {
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-48 object-cover"
+                className="w-full h-64 object-cover"
               />
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                <p className="text-red-600 font-bold">${product.price}</p>
+              <div className="p-6">
+                <h3 className="text-2xl font-semibold mb-2">{product.name}</h3>
+                <p className="text-red-600 text-xl font-bold">${product.price}</p>
+                <Link
+                  to="/products"
+                  className="mt-4 inline-block bg-red-600 text-white px-6 py-2 rounded font-semibold hover:bg-red-700 transition-colors"
+                >
+                  View Details
+                </Link>
               </div>
             </div>
           ))}

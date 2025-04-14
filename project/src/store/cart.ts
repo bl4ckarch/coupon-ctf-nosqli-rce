@@ -42,6 +42,7 @@ export const useCartStore = create<CartState>((set) => ({
     const response = await fetch('/api/cart/validate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ code }),
     });
     if (!response.ok) {
