@@ -6,10 +6,14 @@ export default function Cart() {
   const { items, removeFromCart, updateQuantity, validateCoupon } = useCartStore();
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
+  const [discountApplied, setDiscountApplied] = useState(false);
 
-  const total = items.reduce((sum, item) => (
+  const rawTotal = items.reduce((sum, item) => (
     sum + item.product.price * item.quantity
   ), 0);
+
+  const discountedTotal = discountApplied ? rawTotal * 0.1 : rawTotal;
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     if (newQuantity > 0) {
@@ -20,10 +24,13 @@ export default function Cart() {
   const handleCouponSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setCouponError('');
-    
+    setCouponSuccess('');
+
     try {
-      await validateCoupon(couponCode);
-      // Handle successful coupon validation
+      const result = await validateCoupon(couponCode);
+      // Si on a une réponse valide => succès
+      setCouponSuccess('Coupon applied successfully! 🎉');
+      setDiscountApplied(true);
     } catch (err) {
       setCouponError('Invalid coupon code');
     }
@@ -86,8 +93,11 @@ export default function Cart() {
             <div className="space-y-2 mb-6">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
+                <span>${discountedTotal.toFixed(2)}</span>
               </div>
+              {discountApplied && (
+                <div className="text-green-500 text-sm">✅ -90% coupon applied</div>
+              )}
             </div>
             
             <form onSubmit={handleCouponSubmit} className="mb-6">
@@ -112,12 +122,15 @@ export default function Cart() {
               {couponError && (
                 <p className="text-red-600 text-sm mt-1">{couponError}</p>
               )}
+              {couponSuccess && (
+                <p className="text-green-500 text-sm mt-1">{couponSuccess}</p>
+              )}
             </form>
             
             <button
               className="w-full bg-red-600 text-white py-3 rounded font-semibold hover:bg-red-700 transition"
             >
-              Checkout (${total.toFixed(2)})
+              Checkout (${discountedTotal.toFixed(2)})
             </button>
           </div>
         </div>
