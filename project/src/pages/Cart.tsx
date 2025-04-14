@@ -98,7 +98,7 @@ export default function Cart() {
                 <input
                   type="text"
                   value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
+                  onChange={(e) => setCouponCode(e.target.value.trim())}
                   className="flex-1 bg-[#2a2a2a] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
                   placeholder="Enter code"
                 />
