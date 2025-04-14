@@ -6,7 +6,7 @@ interface CartState {
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
-  validateCoupon: (code: string) => Promise<void>;
+  validateCoupon: (couponCode: string) => Promise<void>;
   clearCart: () => void;
 }
 
@@ -38,12 +38,12 @@ export const useCartStore = create<CartState>((set) => ({
         item.productId === productId ? { ...item, quantity } : item
       ),
     })),
-  validateCoupon: async (code) => {
+  validateCoupon: async (couponCode) => {
     const response = await fetch('/api/cart/validate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ couponCode }),
     });
     if (!response.ok) {
       throw new Error('Invalid coupon code');
