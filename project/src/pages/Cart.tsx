@@ -3,7 +3,7 @@ import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../store/cart';
 
 export default function Cart() {
-  const { items, removeFromCart, updateQuantity, validateCoupon } = useCartStore();
+  const { items, removeFromCart, updateQuantity, validateCoupon,clearCart } = useCartStore();
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
@@ -36,7 +36,7 @@ export default function Cart() {
     }
   };
   
-  const handleCheckout = async () => {
+  /*const handleCheckout = async () => {
     setCheckoutMessage('');
     try {
       const res = await fetch('/api/cart/checkout', {
@@ -57,8 +57,26 @@ export default function Cart() {
     } catch (err) {
       setCheckoutMessage('❌ Failed to place order. Try again.');
     }
-  };
+  }; */
+  const handleCheckout = async () => {
+    try {
+      const res = await fetch('/api/cart/checkout', {
+        method: 'POST',
+        credentials: 'include'
+      });
   
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data.error || 'Checkout failed');
+      }
+  
+      clearCart();
+      setCheckoutMessage(data.message || 'Checkout complete!');
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8">Your Cart</h1>
