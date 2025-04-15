@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../store/cart';
-
+const [checkoutMessage, setCheckoutMessage] = useState('');
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, validateCoupon } = useCartStore();
   const [couponCode, setCouponCode] = useState('');
@@ -37,24 +37,25 @@ export default function Cart() {
   };
   
   const handleCheckout = async () => {
+    setCheckoutMessage('');
     try {
-      const response = await fetch('/api/cart/checkout', {
+      const res = await fetch('/api/cart/checkout', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        credentials: 'include', // pour envoyer les cookies de session
+        credentials: 'include' // très important si tu utilises les cookies de session
       });
   
-      if (!response.ok) {
-        throw new Error('Checkout failed');
-      }
+      const data = await res.json();
   
-      const result = await response.json();
-      alert(result.message || 'Checkout successful!');
+      if (!res.ok) throw new Error(data.error || 'Checkout failed');
+  
+      setCheckoutMessage('✅ Order placed successfully!');
+      // vider le panier côté frontend
+      useCartStore.getState().clearCart(); 
     } catch (err) {
-      console.error('[!] Checkout error:', err);
-      alert('Checkout failed!');
+      setCheckoutMessage('❌ Failed to place order. Try again.');
     }
   };
   
@@ -150,11 +151,15 @@ export default function Cart() {
             </form>
             
             <button
-                className="w-full bg-red-600 text-white py-3 rounded font-semibold hover:bg-red-700 transition"
-                onClick={handleCheckout}
-            >
+              onClick={handleCheckout}
+              className="w-full bg-red-600 text-white py-3 rounded font-semibold hover:bg-red-700 transition"
+              >
               Checkout (${discountedTotal.toFixed(2)})
             </button>
+
+            {checkoutMessage && (
+              <p className="text-sm mt-3 text-white">{checkoutMessage}</p>
+            )}
           </div>
         </div>
       )}

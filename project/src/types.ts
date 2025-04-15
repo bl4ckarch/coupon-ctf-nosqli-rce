@@ -27,8 +27,8 @@ export type CartState = {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   validateCoupon: (code: string) => Promise<any>;
+  clearCart: () => void;
 };
-
 export interface AuthState {
   user: User | null;
   login: (username: string, password: string) => Promise<void>;
