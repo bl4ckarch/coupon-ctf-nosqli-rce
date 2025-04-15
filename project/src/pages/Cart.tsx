@@ -3,12 +3,13 @@ import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../store/cart';
 
 export default function Cart() {
-  const { items, removeFromCart, updateQuantity, validateCoupon,clearCart } = useCartStore();
+  const { removeFromCart, updateQuantity, validateCoupon,clearCart } = useCartStore();
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
   const [discountApplied, setDiscountApplied] = useState(false);
   const [checkoutMessage, setCheckoutMessage] = useState('');
+  const items = useCartStore((state) => state.items);
   const rawTotal = items.reduce((sum, item) => (
     sum + item.product.price * item.quantity
   ), 0);
@@ -62,7 +63,11 @@ export default function Cart() {
     try {
       const res = await fetch('/api/cart/checkout', {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ items }) // 👈 envoie le panier !
       });
   
       const data = await res.json();
@@ -77,6 +82,7 @@ export default function Cart() {
       alert(err.message);
     }
   };
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8">Your Cart</h1>
