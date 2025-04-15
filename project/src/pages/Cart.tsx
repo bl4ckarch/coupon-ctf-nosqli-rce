@@ -35,7 +35,29 @@ export default function Cart() {
       setCouponError('Invalid coupon code');
     }
   };
-
+  
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch('/api/cart/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // pour envoyer les cookies de session
+      });
+  
+      if (!response.ok) {
+        throw new Error('Checkout failed');
+      }
+  
+      const result = await response.json();
+      alert(result.message || 'Checkout successful!');
+    } catch (err) {
+      console.error('[!] Checkout error:', err);
+      alert('Checkout failed!');
+    }
+  };
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8">Your Cart</h1>
@@ -128,7 +150,8 @@ export default function Cart() {
             </form>
             
             <button
-              className="w-full bg-red-600 text-white py-3 rounded font-semibold hover:bg-red-700 transition"
+                className="w-full bg-red-600 text-white py-3 rounded font-semibold hover:bg-red-700 transition"
+                onClick={handleCheckout}
             >
               Checkout (${discountedTotal.toFixed(2)})
             </button>
