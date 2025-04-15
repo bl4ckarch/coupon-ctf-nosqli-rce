@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../store/cart';
-
+import { useNavigate } from 'react-router-dom';
 export default function Cart() {
+  const navigate = useNavigate();
   const { removeFromCart, updateQuantity, validateCoupon,clearCart } = useCartStore();
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
@@ -36,29 +37,7 @@ export default function Cart() {
       setCouponError('Invalid coupon code');
     }
   };
-  
-  /*const handleCheckout = async () => {
-    setCheckoutMessage('');
-    try {
-      const res = await fetch('/api/cart/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include' // très important si tu utilises les cookies de session
-      });
-  
-      const data = await res.json();
-  
-      if (!res.ok) throw new Error(data.error || 'Checkout failed');
-  
-      setCheckoutMessage('✅ Order placed successfully!');
-      // vider le panier côté frontend
-      useCartStore.getState().clearCart(); 
-    } catch (err) {
-      setCheckoutMessage('❌ Failed to place order. Try again.');
-    }
-  }; */
+
   const handleCheckout = async () => {
     try {
       const res = await fetch('/api/cart/checkout', {
@@ -67,7 +46,7 @@ export default function Cart() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ items }) // 👈 envoie le panier !
+        body: JSON.stringify({ items })
       });
   
       const data = await res.json();
@@ -78,6 +57,11 @@ export default function Cart() {
   
       clearCart();
       setCheckoutMessage(data.message || 'Checkout complete!');
+  
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 2000); 
     } catch (err: any) {
       alert(err.message);
     }
