@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCartStore } from '../store/cart';
-const [checkoutMessage, setCheckoutMessage] = useState('');
+
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, validateCoupon } = useCartStore();
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
   const [discountApplied, setDiscountApplied] = useState(false);
-
+  const [checkoutMessage, setCheckoutMessage] = useState('');
   const rawTotal = items.reduce((sum, item) => (
     sum + item.product.price * item.quantity
   ), 0);
