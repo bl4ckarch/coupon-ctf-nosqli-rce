@@ -8,7 +8,7 @@ export interface User {
 }
 
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   price: number;
@@ -20,6 +20,14 @@ export interface CartItem {
   quantity: number;
   product: Product;
 }
+
+export type CartState = {
+  items: CartItem[];
+  addToCart: (product: Product) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  validateCoupon: (code: string) => Promise<any>;
+};
 
 export interface AuthState {
   user: User | null;

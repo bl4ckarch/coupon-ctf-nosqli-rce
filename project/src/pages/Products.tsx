@@ -36,7 +36,7 @@ export default function Products() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {products.map((product) => (
           <div
-            key={product.id}
+            key={product._id}
             className="bg-[#1f1f1f] rounded-lg overflow-hidden hover:scale-105 transition duration-300"
           >
             <img
