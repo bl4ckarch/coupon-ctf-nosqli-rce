@@ -46,7 +46,7 @@ export default function Home() {
         />
         <div className="container mx-auto px-4 h-full flex items-center">
           <div className="max-w-2xl">
-            <h1 className="text-6xl font-bold mb-4">Welcome to CTF Shop</h1>
+            <h1 className="text-6xl font-bold mb-4">Welcome to Amine Express</h1>
             <p className="text-2xl mb-8 text-gray-300">Your destination for premium gaming gear.</p>
             <Link
               to="/products"

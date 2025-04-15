@@ -16,7 +16,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     <div className="min-h-screen bg-[#141414] text-white">
       <nav className="bg-black/95 fixed w-full z-50 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link to="/" className="text-red-600 text-2xl font-bold">CTF Shop</Link>
+          <Link to="/" className="text-red-600 text-2xl font-bold">Amine Express</Link>
           
           <div className="flex items-center gap-6">
             <Link to="/products" className="hover:text-red-600">Products</Link>
